@@ -243,23 +243,23 @@ am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
 A2X = 
-ACLOCAL = ${SHELL} /root/spice-0.12.8/missing aclocal-1.15
+ACLOCAL = ${SHELL} /home/ykt/xixi-ss/missing aclocal-1.15
 ALLOCA = 
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
 AR = ar
 ASCIIDOC = 
-AUTOCONF = ${SHELL} /root/spice-0.12.8/missing autoconf
-AUTOHEADER = ${SHELL} /root/spice-0.12.8/missing autoheader
-AUTOMAKE = ${SHELL} /root/spice-0.12.8/missing automake-1.15
+AUTOCONF = ${SHELL} /home/ykt/xixi-ss/missing autoconf
+AUTOHEADER = ${SHELL} /home/ykt/xixi-ss/missing autoheader
+AUTOMAKE = ${SHELL} /home/ykt/xixi-ss/missing automake-1.15
 AWK = gawk
-CC = gcc -std=gnu99
+CC = gcc
 CCDEPMODE = depmode=gcc3
-CELT051_CFLAGS =  
-CELT051_LIBS = -lcelt051 -lm  
+CELT051_CFLAGS = 
+CELT051_LIBS = 
 CFLAGS = -g -O2
 COMMON_CFLAGS = -I ${top_srcdir}/spice-common/ -I ${top_builddir}/spice-common/
-CPP = gcc -std=gnu99 -E
+CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
@@ -270,12 +270,12 @@ DUMPBIN =
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-FGREP = /usr/bin/grep -F
-GLIB2_CFLAGS = -I/usr/include/glib-2.0 -I/usr/lib64/glib-2.0/include  
-GLIB2_LIBS = -lglib-2.0  
-GREP = /usr/bin/grep
+FGREP = /bin/grep -F
+GLIB2_CFLAGS = -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+GLIB2_LIBS = -lglib-2.0
+GREP = /bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
@@ -296,9 +296,9 @@ LT_SYS_LIBRARY_PATH =
 LZ4_CFLAGS = 
 LZ4_LIBS = 
 MAINT = #
-MAKEINFO = ${SHELL} /root/spice-0.12.8/missing makeinfo
+MAKEINFO = ${SHELL} /home/ykt/xixi-ss/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = /usr/bin/mkdir -p
+MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
 NMEDIT = 
 NO_INDIRECT_LDFLAGS = -Wl,--no-copy-dt-needed-entries
@@ -314,42 +314,42 @@ PACKAGE_TARNAME = spice
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.12.8
 PATH_SEPARATOR = :
-PIXMAN_CFLAGS = -I/usr/include/pixman-1  
-PIXMAN_LIBS = -lpixman-1  
+PIXMAN_CFLAGS = -I/usr/include/pixman-1
+PIXMAN_LIBS = -lpixman-1
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = /opt/intel/opencl:
+PKG_CONFIG_PATH = 
 PYTHON = /usr/bin/python2
 RANLIB = ranlib
 RELRO_LDFLAGS = -Wl,-z -Wl,relro -Wl,-z -Wl,now
 SASL_CFLAGS = 
 SASL_LIBS =  -lsasl2
-SED = /usr/bin/sed
+SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 SMARTCARD_CFLAGS = 
 SMARTCARD_LIBS = 
 SPICE_LT_VERSION = 11:1:10
 SPICE_NONPKGCONFIG_CFLAGS = 
 SPICE_NONPKGCONFIG_LIBS =  -pthread -lm -lrt
-SPICE_PROTOCOL_CFLAGS = -I/usr/include/spice-1  
-SPICE_PROTOCOL_LIBS =  
+SPICE_PROTOCOL_CFLAGS = -I/usr/include/spice-1
+SPICE_PROTOCOL_LIBS = 
 SPICE_PROTOCOL_MIN_VER = 0.12.10
-SPICE_REQUIRES =  glib-2.0 >= 2.22 pixman-1 >= 0.17.7 celt051 >= 0.5.1.1 openssl
+SPICE_REQUIRES =  glib-2.0 >= 2.22 pixman-1 >= 0.17.7 openssl
 SPICE_SERVER_VERSION = 0x000c08
-SSL_CFLAGS =  
-SSL_LIBS = -lssl -lcrypto  
+SSL_CFLAGS = 
+SSL_LIBS = -lssl -lcrypto
 STRIP = strip
 VERSION = 0.12.8
 VISIBILITY_HIDDEN_CFLAGS = -fvisibility=hidden
-WARN_CFLAGS =  -W -Waddress -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wchar-subscripts -Wclobbered -Wcomment -Wcomments -Wcoverage-mismatch -Wcpp -Wdeprecated-declarations -Wdisabled-optimization -Wdiv-by-zero -Wdouble-promotion -Wempty-body -Wendif-labels -Wextra -Wformat-contains-nul -Wformat-extra-args -Wformat-security -Wformat-y2k -Wfree-nonheap-object -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Winvalid-memory-model -Winvalid-pch -Wlogical-op -Wmain -Wmaybe-uninitialized -Wmissing-braces -Wmissing-field-initializers -Wmissing-include-dirs -Wmissing-parameter-type -Wmultichar -Wnarrowing -Wnonnull -Wold-style-declaration -Woverflow -Woverride-init -Wpacked-bitfield-compat -Wparentheses -Wpointer-arith -Wpointer-sign -Wpragmas -Wreturn-local-addr -Wreturn-type -Wsequence-point -Wsizeof-pointer-memaccess -Wstrict-aliasing -Wsuggest-attribute=const -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wswitch -Wsync-nand -Wtrampolines -Wtrigraphs -Wtype-limits -Wuninitialized -Wunknown-pragmas -Wunused -Wunused-but-set-parameter -Wunused-but-set-variable -Wunused-function -Wunused-label -Wunused-local-typedefs -Wunused-parameter -Wunused-result -Wunused-value -Wunused-variable -Wvarargs -Wvariadic-macros -Wvector-operation-performance -Wvolatile-register-var -Wwrite-strings -Wnormalized=nfc -Wno-sign-compare -Wno-unused-parameter -Wno-format-nonliteral -Wno-ignored-qualifiers -Wno-format-nonliteral -Wframe-larger-than=20460 -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wnested-externs -Wformat-zero-length -Wpointer-to-int-cast -Wjump-misses-init
-WARN_CXXFLAGS =  -W -Waddress -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wchar-subscripts -Wclobbered -Wcomment -Wcomments -Wcoverage-mismatch -Wcpp -Wdeprecated-declarations -Wdisabled-optimization -Wdiv-by-zero -Wdouble-promotion -Wempty-body -Wendif-labels -Wextra -Wformat-contains-nul -Wformat-extra-args -Wformat-security -Wformat-y2k -Wfree-nonheap-object -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Winvalid-memory-model -Winvalid-pch -Wlogical-op -Wmain -Wmaybe-uninitialized -Wmissing-braces -Wmissing-field-initializers -Wmissing-include-dirs -Wmissing-parameter-type -Wmultichar -Wnarrowing -Wnonnull -Wold-style-declaration -Woverflow -Woverride-init -Wpacked-bitfield-compat -Wparentheses -Wpointer-arith -Wpointer-sign -Wpragmas -Wreturn-local-addr -Wreturn-type -Wsequence-point -Wsizeof-pointer-memaccess -Wstrict-aliasing -Wsuggest-attribute=const -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wswitch -Wsync-nand -Wtrampolines -Wtrigraphs -Wtype-limits -Wuninitialized -Wunknown-pragmas -Wunused -Wunused-but-set-parameter -Wunused-but-set-variable -Wunused-function -Wunused-label -Wunused-local-typedefs -Wunused-parameter -Wunused-result -Wunused-value -Wunused-variable -Wvarargs -Wvariadic-macros -Wvector-operation-performance -Wvolatile-register-var -Wwrite-strings -Wnormalized=nfc -Wno-sign-compare -Wno-unused-parameter -Wno-format-nonliteral -Wno-ignored-qualifiers -Wno-format-nonliteral -Wframe-larger-than=20460 -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const
-WARN_LDFLAGS =  -W -Waddress -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wchar-subscripts -Wclobbered -Wcomment -Wcomments -Wcoverage-mismatch -Wcpp -Wdeprecated-declarations -Wdisabled-optimization -Wdiv-by-zero -Wdouble-promotion -Wempty-body -Wendif-labels -Wextra -Wformat-contains-nul -Wformat-extra-args -Wformat-security -Wformat-y2k -Wfree-nonheap-object -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Winvalid-memory-model -Winvalid-pch -Wlogical-op -Wmain -Wmaybe-uninitialized -Wmissing-braces -Wmissing-field-initializers -Wmissing-include-dirs -Wmissing-parameter-type -Wmultichar -Wnarrowing -Wnonnull -Wold-style-declaration -Woverflow -Woverride-init -Wpacked-bitfield-compat -Wparentheses -Wpointer-arith -Wpointer-sign -Wpragmas -Wreturn-local-addr -Wreturn-type -Wsequence-point -Wsizeof-pointer-memaccess -Wstrict-aliasing -Wsuggest-attribute=const -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wswitch -Wsync-nand -Wtrampolines -Wtrigraphs -Wtype-limits -Wuninitialized -Wunknown-pragmas -Wunused -Wunused-but-set-parameter -Wunused-but-set-variable -Wunused-function -Wunused-label -Wunused-local-typedefs -Wunused-parameter -Wunused-result -Wunused-value -Wunused-variable -Wvarargs -Wvariadic-macros -Wvector-operation-performance -Wvolatile-register-var -Wwrite-strings -Wnormalized=nfc -Wno-sign-compare -Wno-unused-parameter -Wno-format-nonliteral -Wno-ignored-qualifiers -Wno-format-nonliteral -Wframe-larger-than=20460 -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wnested-externs -Wformat-zero-length -Wpointer-to-int-cast -Wjump-misses-init
+WARN_CFLAGS =  -W -Waddress -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wchar-subscripts -Wclobbered -Wcomment -Wcomments -Wcoverage-mismatch -Wcpp -Wdate-time -Wdeprecated-declarations -Wdisabled-optimization -Wdiv-by-zero -Wdouble-promotion -Wempty-body -Wendif-labels -Wextra -Wformat-contains-nul -Wformat-extra-args -Wformat-security -Wformat-y2k -Wfree-nonheap-object -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Winvalid-memory-model -Winvalid-pch -Wlogical-op -Wmain -Wmaybe-uninitialized -Wmissing-braces -Wmissing-field-initializers -Wmissing-include-dirs -Wmissing-parameter-type -Wmultichar -Wnarrowing -Wnonnull -Wold-style-declaration -Wopenmp-simd -Woverflow -Woverride-init -Wpacked-bitfield-compat -Wparentheses -Wpointer-arith -Wpointer-sign -Wpragmas -Wreturn-local-addr -Wreturn-type -Wsequence-point -Wsizeof-pointer-memaccess -Wstrict-aliasing -Wsuggest-attribute=const -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wswitch -Wsync-nand -Wtrampolines -Wtrigraphs -Wtype-limits -Wuninitialized -Wunknown-pragmas -Wunused -Wunused-but-set-parameter -Wunused-but-set-variable -Wunused-function -Wunused-label -Wunused-local-typedefs -Wunused-parameter -Wunused-result -Wunused-value -Wunused-variable -Wvarargs -Wvariadic-macros -Wvector-operation-performance -Wvolatile-register-var -Wwrite-strings -Wnormalized=nfc -Wno-sign-compare -Wno-unused-parameter -Wno-format-nonliteral -Wno-ignored-qualifiers -Wno-format-nonliteral -Wframe-larger-than=20460 -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wnested-externs -Wformat-zero-length -Wpointer-to-int-cast -Wjump-misses-init
+WARN_CXXFLAGS =  -W -Waddress -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wchar-subscripts -Wclobbered -Wcomment -Wcomments -Wcoverage-mismatch -Wcpp -Wdate-time -Wdeprecated-declarations -Wdisabled-optimization -Wdiv-by-zero -Wdouble-promotion -Wempty-body -Wendif-labels -Wextra -Wformat-contains-nul -Wformat-extra-args -Wformat-security -Wformat-y2k -Wfree-nonheap-object -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Winvalid-memory-model -Winvalid-pch -Wlogical-op -Wmain -Wmaybe-uninitialized -Wmissing-braces -Wmissing-field-initializers -Wmissing-include-dirs -Wmissing-parameter-type -Wmultichar -Wnarrowing -Wnonnull -Wold-style-declaration -Wopenmp-simd -Woverflow -Woverride-init -Wpacked-bitfield-compat -Wparentheses -Wpointer-arith -Wpointer-sign -Wpragmas -Wreturn-local-addr -Wreturn-type -Wsequence-point -Wsizeof-pointer-memaccess -Wstrict-aliasing -Wsuggest-attribute=const -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wswitch -Wsync-nand -Wtrampolines -Wtrigraphs -Wtype-limits -Wuninitialized -Wunknown-pragmas -Wunused -Wunused-but-set-parameter -Wunused-but-set-variable -Wunused-function -Wunused-label -Wunused-local-typedefs -Wunused-parameter -Wunused-result -Wunused-value -Wunused-variable -Wvarargs -Wvariadic-macros -Wvector-operation-performance -Wvolatile-register-var -Wwrite-strings -Wnormalized=nfc -Wno-sign-compare -Wno-unused-parameter -Wno-format-nonliteral -Wno-ignored-qualifiers -Wno-format-nonliteral -Wframe-larger-than=20460 -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const
+WARN_LDFLAGS =  -W -Waddress -Waggressive-loop-optimizations -Wall -Warray-bounds -Wattributes -Wbuiltin-macro-redefined -Wcast-align -Wchar-subscripts -Wclobbered -Wcomment -Wcomments -Wcoverage-mismatch -Wcpp -Wdate-time -Wdeprecated-declarations -Wdisabled-optimization -Wdiv-by-zero -Wdouble-promotion -Wempty-body -Wendif-labels -Wextra -Wformat-contains-nul -Wformat-extra-args -Wformat-security -Wformat-y2k -Wfree-nonheap-object -Wignored-qualifiers -Wimplicit -Wimplicit-function-declaration -Wimplicit-int -Winit-self -Wint-to-pointer-cast -Winvalid-memory-model -Winvalid-pch -Wlogical-op -Wmain -Wmaybe-uninitialized -Wmissing-braces -Wmissing-field-initializers -Wmissing-include-dirs -Wmissing-parameter-type -Wmultichar -Wnarrowing -Wnonnull -Wold-style-declaration -Wopenmp-simd -Woverflow -Woverride-init -Wpacked-bitfield-compat -Wparentheses -Wpointer-arith -Wpointer-sign -Wpragmas -Wreturn-local-addr -Wreturn-type -Wsequence-point -Wsizeof-pointer-memaccess -Wstrict-aliasing -Wsuggest-attribute=const -Wsuggest-attribute=format -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wswitch -Wsync-nand -Wtrampolines -Wtrigraphs -Wtype-limits -Wuninitialized -Wunknown-pragmas -Wunused -Wunused-but-set-parameter -Wunused-but-set-variable -Wunused-function -Wunused-label -Wunused-local-typedefs -Wunused-parameter -Wunused-result -Wunused-value -Wunused-variable -Wvarargs -Wvariadic-macros -Wvector-operation-performance -Wvolatile-register-var -Wwrite-strings -Wnormalized=nfc -Wno-sign-compare -Wno-unused-parameter -Wno-format-nonliteral -Wno-ignored-qualifiers -Wno-format-nonliteral -Wframe-larger-than=20460 -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const -Waggregate-return -Wstrict-prototypes -Wold-style-definition -Wnested-externs -Wformat-zero-length -Wpointer-to-int-cast -Wjump-misses-init
 Z_LIBS = -lz
-abs_builddir = /root/spice-0.12.8
-abs_srcdir = /root/spice-0.12.8
-abs_top_builddir = /root/spice-0.12.8
-abs_top_srcdir = /root/spice-0.12.8
+abs_builddir = /home/ykt/xixi-ss
+abs_srcdir = /home/ykt/xixi-ss
+abs_top_builddir = /home/ykt/xixi-ss
+abs_top_srcdir = /home/ykt/xixi-ss
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_DUMPBIN = 
@@ -378,7 +378,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /root/spice-0.12.8/install-sh
+install_sh = ${SHELL} /home/ykt/xixi-ss/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale

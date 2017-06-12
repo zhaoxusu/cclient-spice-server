@@ -20,7 +20,7 @@
 #endif
 
 #define SPICE_LOG_DOMAIN "SpiceWorker"
-
+//#define INTEL_QVS
 /* Common variable abbreviations:
  *
  * rcc - RedChannelClient
@@ -99,10 +99,12 @@
 #include "spice_bitmap_utils.h"
 #include "spice_image_cache.h"
 
+#ifdef INTEL_QVS
 #include <mfx/mfxvideo.h>
 #include <mfx/mfxplugin.h>
 #include <va/va.h>
 #include <va/va_drm.h>
+#endif
 
 //#define COMPRESS_STAT
 //#define DUMP_BITMAP
@@ -1081,12 +1083,14 @@ typedef struct RedWorker {
     pixman_image_t *image;   //cavse image
     uint32_t client_w;  //ÖÕ¶Ë¿í
     uint32_t client_h;  //ÖÕ¶Ë¸ß
+#ifdef INTEL_QVS
     mfxSession session; //vpp session rgb ×ª yuv
+		mfxFrameSurface1 nv12_out;
+    mfxFrameSurface1 rgb_in;
+#endif
     AVFormatContext* pFormatCtx;
     AVCodecContext* pCodecCtx; 
 		AVOutputFormat* fmt;
-		mfxFrameSurface1 nv12_out;
-    mfxFrameSurface1 rgb_in;
 		AVStream* video_st;
 		AVCodec* pCodec;
 		AVPacket pkt;
@@ -10172,21 +10176,23 @@ static int display_channel_init(DisplayChannelClient *dcc, SpiceMsgcDisplayInit 
 {
 	AVDictionary *param = 0;
 	RedWorker *worker = dcc->common.worker;
+#ifdef INTEL_QVS
 	mfxVideoParam par;
 	mfxStatus err;
-	
+#endif	
 	if(init_info->cclient_flag == 303030) //zxs add ¿Í»§¶Ë
 	{
-		printf("teepc connect %d %d %dX%d\n",worker->session,init_info->cclient_flag,init_info->disp_size[0],init_info->disp_size[1]);
+		printf("teepc connect %d %dX%d\n",init_info->cclient_flag,init_info->disp_size[0],init_info->disp_size[1]);
   	worker->ClientType = 0;
   	worker->client_w = init_info->disp_size[0];
   	worker->client_h = init_info->disp_size[1];
   	
     worker->pCodecCtx->width = worker->client_w;  
 	  worker->pCodecCtx->height = worker->client_h;
-  	
+#ifdef INTEL_QVS
     if( worker->session == 0 )
     {
+#endif
     	//Èí¼þ±àÂë
     	av_dict_set(&param, "preset", "superfast", 0);
 		  av_dict_set(&param, "tune", "zerolatency", 0);
@@ -10196,6 +10202,7 @@ static int display_channel_init(DisplayChannelClient *dcc, SpiceMsgcDisplayInit 
 			  exit(0);
 		  }
     	pthread_create(&worker->thread_id,NULL,cclient_x264_thread,worker);
+#ifdef INTEL_QVS
     }
     else
     {
@@ -10232,6 +10239,7 @@ static int display_channel_init(DisplayChannelClient *dcc, SpiceMsgcDisplayInit 
 		  }
     	pthread_create(&worker->thread_id,NULL,cclient_qsv_thread,worker);
     }
+#endif
   }
   else
   {
@@ -12462,6 +12470,7 @@ void *cclient_x264_thread(RedWorker *worker)
 }
 void *cclient_qsv_thread(RedWorker *worker)
 {
+#ifdef INTEL_QVS
 	pixman_image_t *image;
 	int w,h,oldw,oldh,ret;
 	RingItem *dcc_ring_item, *next;
@@ -12674,6 +12683,7 @@ void *cclient_qsv_thread(RedWorker *worker)
 	
 	
 	}
+#endif
 }
 
 
@@ -12753,6 +12763,7 @@ static int decoder_init_sw(RedWorker *worker)
 //³õÊ¼»¯Ó²¼þ±àÂëÆ÷
 static int decoder_init_hw(RedWorker *worker)
 {
+#ifdef INTEL_QVS
 	  int fd;
 	  mfxStatus err;
 	  mfxIMPL impl;
@@ -12882,7 +12893,11 @@ static int decoder_init_hw(RedWorker *worker)
 	worker->img_convert_ctx = NULL;
 	pthread_mutex_init (&worker->mutex,NULL);
 	worker->UpdateCanvas = false;
+
 	return 0;
+#else
+  return -1;
+#endif
 }
 static void red_init(RedWorker *worker, WorkerInitData *init_data)
 {
