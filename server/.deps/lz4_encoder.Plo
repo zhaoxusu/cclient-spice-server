@@ -1,0 +1,5 @@
+lz4_encoder.lo: lz4_encoder.c /usr/include/stdc-predef.h ../config.h
+
+/usr/include/stdc-predef.h:
+
+../config.h:
