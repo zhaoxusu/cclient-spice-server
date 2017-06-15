@@ -26,7 +26,7 @@
 #define HAVE_ARPA_INET_H 1
 
 /* Define if we have celt051 codec */
-#define HAVE_CELT051 1
+/* #undef HAVE_CELT051 */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1

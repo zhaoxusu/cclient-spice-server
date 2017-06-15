@@ -21,6 +21,7 @@
 
 #define SPICE_LOG_DOMAIN "SpiceWorker"
 //#define INTEL_QVS
+#define SW_ENCODER_JPEG
 /* Common variable abbreviations:
  *
  * rcc - RedChannelClient
@@ -1162,6 +1163,7 @@ static void red_push_monitors_config(DisplayChannelClient *dcc);
 static int decoder_init_hw(RedWorker *worker);
 static int decoder_init_sw(RedWorker *worker);
 void *cclient_x264_thread(RedWorker *worker);
+void *cclient_jpeg_thread(RedWorker *worker);
 void *cclient_qsv_thread(RedWorker *worker);
 /*
  * Macros to make iterating over stuff easier
@@ -1329,11 +1331,16 @@ static CclientDrawItem *get_cclient_draw_item(
     item->cclient_draw.width = width;
     item->cclient_draw.height = height;
     item->cclient_draw.data_size = size;
-    pH264Data = malloc(size);
-    
-    memcpy(pH264Data,data,size);
-    item->cclient_draw.data = (void *)pH264Data;
-
+    if(format == CCLIENT_DRAW_TYPE_H264)
+    {
+    	pH264Data = malloc(size);
+    	memcpy(pH264Data,data,size);
+    	item->cclient_draw.data = (void *)pH264Data;
+		}
+		else
+		{
+			item->cclient_draw.data = (void *)data;
+		}
     red_channel_pipe_item_init(channel,
             &item->pipe_item, PIPE_ITEM_TYPE_CCLIENT_DRAW);
     return item;
@@ -10201,7 +10208,11 @@ static int display_channel_init(DisplayChannelClient *dcc, SpiceMsgcDisplayInit 
 			  printf("Failed to open encoder! \n");
 			  exit(0);
 		  }
+		  #ifdef SW_ENCODER_JPEG
+		  pthread_create(&worker->thread_id,NULL,cclient_jpeg_thread,worker);
+		  #else
     	pthread_create(&worker->thread_id,NULL,cclient_x264_thread,worker);
+    	#endif
 #ifdef INTEL_QVS
     }
     else
@@ -10856,16 +10867,13 @@ static void display_channel_client_release_item_before_push(DisplayChannelClient
     case PIPE_ITEM_TYPE_CCLIENT_DRAW:
     	{
     		CclientDrawItem *cclient_draw_item = SPICE_CONTAINEROF(item,CclientDrawItem, pipe_item);
-    		//printf("i get here free %p \n",cclient_draw_item);
-    		if(cclient_draw_item->cclient_draw.format == CCLIENT_DRAW_TYPE_YUV)
+    		if(cclient_draw_item->cclient_draw.format == CCLIENT_DRAW_TYPE_JPEG)
     		{
-    			av_freep(cclient_draw_item->cclient_draw.data);
     			free(cclient_draw_item->cclient_draw.data);
     			free(cclient_draw_item);
     		}
     		else if(cclient_draw_item->cclient_draw.format == CCLIENT_DRAW_TYPE_H264)
     		{
-    			//av_free_packet(cclient_draw_item->cclient_draw.data);
     			free(cclient_draw_item->cclient_draw.data);
     			free(cclient_draw_item);
     		}
@@ -12317,6 +12325,99 @@ static void register_callbacks(Dispatcher *dispatcher)
                                 sizeof(RedWorkerMessageDriverUnload),
                                 DISPATCHER_NONE);
 }
+void *cclient_jpeg_thread(RedWorker *worker)
+{
+pixman_image_t *image;
+	int w,h,ret;
+	RingItem *dcc_ring_item, *next;
+	DisplayChannelClient *dcc=NULL;
+  int iFrameNum = 0;
+
+	uint8_t *pBuff;
+	static TIME_COST_INFO time_cost;
+	int cost_usec;
+	char *pJpegOut=NULL;
+	int jpeg_size = 0;
+	JpegEncoderContext *jpeg;
+	/*
+	FILE *fp;
+	char pName[512];
+	*/
+	while(1)
+  {
+		if (!display_is_connected(worker))
+  	{
+  		printf("decode thread exit \n");
+  		decoder_deinit(worker);
+			return false;
+  	}
+	image = worker->image;
+  if(image == NULL)
+  {
+  	printf("image is null \n");
+  	usleep(1000*50);
+  	continue;
+  }
+
+  w = pixman_image_get_width(image);
+  h = pixman_image_get_height(image);
+  if(w == 0 || h ==0)
+  {
+  	usleep(1000*50);
+  	continue;
+  }
+    
+	if(worker->UpdateCanvas)
+	{
+		worker->UpdateCanvas = FALSE;
+		
+
+    		gettimeofday(&time_cost.start_time, NULL);
+    		pBuff = (uint8_t *)pixman_image_get_data(image);
+        if(pBuff == NULL)
+        {
+        	return false;
+        }
+    		pBuff = pBuff + pixman_image_get_stride(image)*(h-1);
+        jpeg = worker->jpeg;
+        pJpegOut = malloc(w*h*4);
+       
+	      jpeg_size = jpeg_encode(jpeg, 85 , JPEG_IMAGE_TYPE_BGRX32 ,
+                            w, h, pBuff,
+                            h, w*4, pJpegOut,
+                            w*h*4);
+                            
+                           
+        iFrameNum++;
+  /*
+        sprintf(pName,"/tmp/%d.jpg",iFrameNum);
+        fp=fopen(pName,"w");
+        fwrite(pJpegOut,1,jpeg_size,fp);
+        fclose(fp);
+		*/
+		WORKER_FOREACH_DCC_SAFE(worker, dcc_ring_item, next, dcc) 
+  	{	
+			worker->pkt.stream_index = worker->video_st->index;
+    	CclientDrawItem *item = get_cclient_draw_item(dcc,jpeg_size,pJpegOut,CCLIENT_DRAW_TYPE_JPEG,worker->client_w, worker->client_h,iFrameNum);
+    	red_channel_client_pipe_add(&dcc->common.base, &item->pipe_item);
+		}
+		
+		gettimeofday(&time_cost.end_time, NULL);
+		
+		//控制帧数
+		cost_usec = (time_cost.end_time.tv_sec-time_cost.start_time.tv_sec)*1000000+(time_cost.end_time.tv_usec-time_cost.start_time.tv_usec);
+		printf("jpeg encoder cost %6d \n",cost_usec);
+		if(30000 > cost_usec)
+		{
+			usleep(30000-cost_usec);
+		}	
+	}
+	else
+	{
+		usleep(1000*30);
+	}
+ }//while end	
+}
 void *cclient_x264_thread(RedWorker *worker)
 {
 	pixman_image_t *image;
@@ -12332,7 +12433,7 @@ void *cclient_x264_thread(RedWorker *worker)
 	uint8_t *pBuff;
 	static TIME_COST_INFO time_cost;
 	int cost_usec;
-	
+		
 	ret = av_image_alloc(dst_data, dst_linesize, worker->client_w, worker->client_h , AV_PIX_FMT_YUV420P, 1);  
   if (ret< 0) 
   {  
@@ -12346,7 +12447,7 @@ void *cclient_x264_thread(RedWorker *worker)
   	{
   		printf("decode thread exit \n");
   		decoder_deinit(worker);
-			return false;
+  		return false;
   	}
 	image = worker->image;
   if(image == NULL)
@@ -12388,7 +12489,7 @@ void *cclient_x264_thread(RedWorker *worker)
 		worker->UpdateCanvas = FALSE;
 		
      		iCountH264++;
-    	//	TIME_STATICS_START();
+    		//TIME_STATICS_START();
         gettimeofday(&time_cost.start_time, NULL);
     		pBuff = (uint8_t *)pixman_image_get_data(image);
     		//printf("pBuff %p \n",pBuff);
@@ -12397,13 +12498,15 @@ void *cclient_x264_thread(RedWorker *worker)
         	return false;
         }
     		pBuff = pBuff + pixman_image_get_stride(image)*(h-1);
-
-    		src_linesize[0]=w*4;
+        
+        //TIME_STATICS_END("RGB=>jpeg");
+        //TIME_STATICS_START();
+        src_linesize[0]=w*4;
     		src_data[0]=pBuff;
     		pthread_mutex_lock (&worker->mutex); //zxs add
     		sws_scale(worker->img_convert_ctx,src_data,src_linesize,0,h,dst_data,dst_linesize);
     		pthread_mutex_unlock (&worker->mutex); //zxs add
-      //  TIME_STATICS_END("RGB=>YUV");
+        //TIME_STATICS_END("RGB=>YUV");
     		if(iCountH264 == 1)
     		{
     			//第一帧    			
@@ -12451,9 +12554,10 @@ void *cclient_x264_thread(RedWorker *worker)
     			CclientDrawItem *item = get_cclient_draw_item(dcc,worker->pkt.size,worker->pkt.data,CCLIENT_DRAW_TYPE_H264,worker->client_w, worker->client_h,iCountH264);
     			red_channel_client_pipe_add(&dcc->common.base, &item->pipe_item);
     			av_free_packet(&worker->pkt);
-    		//	TIME_STATICS_END("H264=>socket");
+    			//TIME_STATICS_END("H264=>socket");
     		}		
 		}
+	
 		gettimeofday(&time_cost.end_time, NULL);
 		//控制帧数
 		cost_usec = (time_cost.end_time.tv_sec-time_cost.start_time.tv_sec)*1000000+(time_cost.end_time.tv_usec-time_cost.start_time.tv_usec);

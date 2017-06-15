@@ -980,19 +980,12 @@ void spice_marshall_msg_display_cclient_draw(SpiceMarshaller *m,SPICE_GNUC_UNUSE
   spice_marshaller_add_uint32(m, src->height);	
 	spice_marshaller_add_uint32(m, src->data_size);
   
-	if(src->format == CCLIENT_DRAW_TYPE_YUV)
+	if(src->format == CCLIENT_DRAW_TYPE_JPEG)
 	{
-		uint8_t **dst_data;
-		dst_data =  src->data;
-		
-		spice_marshaller_add(m,dst_data[0],src->width*src->height);
-		spice_marshaller_add(m,dst_data[1],src->width*src->height/4);
-		spice_marshaller_add(m,dst_data[2],src->width*src->height/4);
+		spice_marshaller_add(m,src->data,src->data_size);
 	}
 	else if(src->format == CCLIENT_DRAW_TYPE_H264)
 	{
-	//	AVPacket *pPkg;
-	//	pPkg = src->data;
 		spice_marshaller_add(m,src->data,src->data_size);
 	}
 	

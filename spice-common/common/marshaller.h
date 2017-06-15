@@ -26,7 +26,7 @@
 #include <sys/uio.h>
 #endif
 //zxs add
-#define CCLIENT_DRAW_TYPE_YUV    1
+#define CCLIENT_DRAW_TYPE_JPEG    1
 #define CCLIENT_DRAW_TYPE_H264    2
 
 SPICE_BEGIN_DECLS
