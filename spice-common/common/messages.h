@@ -240,8 +240,8 @@ typedef struct SpiceMsgSurfaceCreate {
 typedef struct SpiceMsgCclientDraw {
 	uint32_t format; // yuv or h264
 	uint32_t num_frames;
-  uint32_t width;
-  uint32_t height;	
+  	uint32_t width;
+  	uint32_t height;	
 	uint32_t data_size;
 	uint8_t *data;
 } SpiceMsgCclientDraw;
