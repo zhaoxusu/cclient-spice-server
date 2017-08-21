@@ -1333,14 +1333,14 @@ static CclientDrawItem *get_cclient_draw_item(
     item->cclient_draw.data_size = size;
     if(format == CCLIENT_DRAW_TYPE_H264)
     {
-    	pH264Data = malloc(size);
+    	pH264Data = spice_malloc(size);
     	memcpy(pH264Data,data,size);
     	item->cclient_draw.data = (void *)pH264Data;
-		}
-		else
-		{
-			item->cclient_draw.data = (void *)data;
-		}
+	}
+	else
+	{
+		item->cclient_draw.data = (void *)data;
+	}
     red_channel_pipe_item_init(channel,
             &item->pipe_item, PIPE_ITEM_TYPE_CCLIENT_DRAW);
     return item;
@@ -4509,11 +4509,11 @@ static void red_draw_qxl_drawable(RedWorker *worker, Drawable *drawable)
 
     surface = &worker->surfaces[drawable->surface_id];
     canvas = surface->context.canvas;
-/*  
-    zxs add
+  
+//    zxs add
     image_cache_aging(&worker->image_cache);
     region_add(&surface->draw_dirty_region, &drawable->red_drawable->bbox);
-*/
+
     switch (drawable->red_drawable->type) {
     case QXL_DRAW_FILL: {
         SpiceFill fill = drawable->red_drawable->u.fill;
@@ -10201,18 +10201,18 @@ static int display_channel_init(DisplayChannelClient *dcc, SpiceMsgcDisplayInit 
     {
 #endif
     	//软件编码
-    	av_dict_set(&param, "preset", "superfast", 0);
+		#ifdef SW_ENCODER_JPEG
+		 pthread_create(&worker->thread_id,NULL,cclient_jpeg_thread,worker);
+		#else
+    		  av_dict_set(&param, "preset", "superfast", 0);
 		  av_dict_set(&param, "tune", "zerolatency", 0);
 		  if (avcodec_open2(worker->pCodecCtx, worker->pCodec,&param) < 0)
 		  {
 			  printf("Failed to open encoder! \n");
 			  exit(0);
 		  }
-		  #ifdef SW_ENCODER_JPEG
-		  pthread_create(&worker->thread_id,NULL,cclient_jpeg_thread,worker);
-		  #else
-    	pthread_create(&worker->thread_id,NULL,cclient_x264_thread,worker);
-    	#endif
+    		 pthread_create(&worker->thread_id,NULL,cclient_x264_thread,worker);
+    		#endif
 #ifdef INTEL_QVS
     }
     else
@@ -12338,11 +12338,14 @@ pixman_image_t *image;
 	int cost_usec;
 	char *pJpegOut=NULL;
 	int jpeg_size = 0;
+	int quality = 85;
+	static int iNeedLastOne=0;
 	JpegEncoderContext *jpeg;
 	/*
 	FILE *fp;
 	char pName[512];
 	*/
+	sleep(1);
 	while(1)
   {
 		if (!display_is_connected(worker))
@@ -12367,10 +12370,20 @@ pixman_image_t *image;
   	continue;
   }
     
-	if(worker->UpdateCanvas)
+	if(worker->UpdateCanvas || (iNeedLastOne == 5))
 	{
-		worker->UpdateCanvas = FALSE;
-		
+				if(worker->UpdateCanvas)
+				{
+						iNeedLastOne = 0;
+						quality = 85;						
+				}
+				else
+				{
+					 //这种情况，要给一个高清晰度的
+					 iNeedLastOne++;
+					 quality = 100;
+				}
+				worker->UpdateCanvas = FALSE;		
 
     		gettimeofday(&time_cost.start_time, NULL);
     		pBuff = (uint8_t *)pixman_image_get_data(image);
@@ -12380,13 +12393,20 @@ pixman_image_t *image;
         }
     		pBuff = pBuff + pixman_image_get_stride(image)*(h-1);
         jpeg = worker->jpeg;
-        pJpegOut = malloc(w*h*4);
-       
-	      jpeg_size = jpeg_encode(jpeg, 85 , JPEG_IMAGE_TYPE_BGRX32 ,
+        pJpegOut = spice_malloc(w*h*4);
+        if(pJpegOut == NULL)
+        {
+        	printf("jpeg malloc error \n");        
+        	return false;	
+        }
+	      jpeg_size = jpeg_encode(jpeg, quality , JPEG_IMAGE_TYPE_BGRX32 ,
                             w, h, pBuff,
                             h, w*4, pJpegOut,
                             w*h*4);
-                            
+        if((jpeg_size <= 0) || (jpeg_size > w*h*4))
+        {
+        	printf("jpeg_encode error ret = %d \n",jpeg_size);        	
+        }                    
                            
         iFrameNum++;
   /*
@@ -12396,17 +12416,17 @@ pixman_image_t *image;
         fclose(fp);
 		*/
 		WORKER_FOREACH_DCC_SAFE(worker, dcc_ring_item, next, dcc) 
-  	{	
-			worker->pkt.stream_index = worker->video_st->index;
-    	CclientDrawItem *item = get_cclient_draw_item(dcc,jpeg_size,pJpegOut,CCLIENT_DRAW_TYPE_JPEG,worker->client_w, worker->client_h,iFrameNum);
-    	red_channel_client_pipe_add(&dcc->common.base, &item->pipe_item);
+  		{	
+			//worker->pkt.stream_index = worker->video_st->index;
+    			CclientDrawItem *item = get_cclient_draw_item(dcc,jpeg_size,pJpegOut,CCLIENT_DRAW_TYPE_JPEG,worker->client_w, worker->client_h,iFrameNum);
+    			red_channel_client_pipe_add(&dcc->common.base, &item->pipe_item);
 		}
 		
 		gettimeofday(&time_cost.end_time, NULL);
 		
 		//控制帧数
 		cost_usec = (time_cost.end_time.tv_sec-time_cost.start_time.tv_sec)*1000000+(time_cost.end_time.tv_usec-time_cost.start_time.tv_usec);
-		printf("jpeg encoder cost %6d \n",cost_usec);
+		//printf("jpeg encoder cost %6d \n",cost_usec);
 		if(30000 > cost_usec)
 		{
 			usleep(30000-cost_usec);
@@ -12415,6 +12435,7 @@ pixman_image_t *image;
 	else
 	{
 		usleep(1000*30);
+		iNeedLastOne++;
 	}
  }//while end	
 }
@@ -13047,6 +13068,8 @@ static void red_init(RedWorker *worker, WorkerInitData *init_data)
     worker->zlib_glz_state = init_data->zlib_glz_state;
     worker->streaming_video = init_data->streaming_video;
     worker->driver_cap_monitors_config = 0;
+    //zxs add
+    worker->ClientType=0;
     ring_init(&worker->current_list);
     image_cache_init(&worker->image_cache);
     image_surface_init(worker);
@@ -13189,7 +13212,8 @@ SPICE_GNUC_NORETURN void *red_worker_main(void *arg)
             }
         }
 
-        if (worker->running) {
+        if (worker->running) 
+        {
             int ring_is_empty;
             red_process_cursor(worker, MAX_PIPE_SIZE, &ring_is_empty);
             red_process_commands(worker, MAX_PIPE_SIZE, &ring_is_empty);

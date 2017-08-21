@@ -1160,7 +1160,8 @@ void red_dispatcher_init(QXLInstance *qxl)
 
     cursor_channel = red_dispatcher_cursor_channel_create(red_dispatcher);
 
-    if (cursor_channel) {
+    if (cursor_channel) 
+    {
         client_cbs.connect = red_dispatcher_set_cursor_peer;
         client_cbs.disconnect = red_dispatcher_disconnect_cursor_peer;
         client_cbs.migrate = red_dispatcher_cursor_migrate;

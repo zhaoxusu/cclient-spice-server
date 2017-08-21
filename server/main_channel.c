@@ -55,7 +55,7 @@
 
 #define PING_INTERVAL (1000 * 10)
 
-#define CLIENT_CONNECTIVITY_TIMEOUT (30*1000) // 30 seconds
+#define CLIENT_CONNECTIVITY_TIMEOUT (30*1000)
 
 static uint8_t zero_page[ZERO_BUF_SIZE] = {0};
 

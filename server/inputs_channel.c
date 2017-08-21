@@ -380,7 +380,8 @@ static int inputs_channel_handle_parsed(RedChannelClient *rcc, uint32_t size, ui
             red_channel_client_pipe_add_type(rcc, PIPE_ITEM_MOUSE_MOTION_ACK);
             icc->motion_count = 0;
         }
-        if (reds_get_mouse_mode() != SPICE_MOUSE_MODE_CLIENT) {
+        if (reds_get_mouse_mode() != SPICE_MOUSE_MODE_CLIENT) 
+        {
             break;
         }
         spice_assert((reds_get_agent_mouse() && reds_has_vdagent()) || tablet);
